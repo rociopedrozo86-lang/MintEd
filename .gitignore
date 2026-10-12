@@ -1,0 +1,15 @@
+# Secretos: NUNCA subir
+.env
+*.env
+!.env.example
+
+# Dependencias y build
+node_modules/
+cache/
+artifacts/
+coverage/
+coverage.json
+typechain-types/
+
+# Sistema
+.DS_Store
