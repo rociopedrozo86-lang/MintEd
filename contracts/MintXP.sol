@@ -106,10 +106,14 @@ contract MintXP is ERC20, ERC20Burnable, EIP712, Ownable {
         emit ClaimSignerUpdated(old, newSigner); // evento: hay nueva firma backend!!!
     }
 
+    // ---------------------------------------------------------------------
+    // Override: Redefinimos la función _update de nuestro ERC20 heredado -> decidimos transferencia de tokens
+    // ---------------------------------------------------------------------
     
     function _update(address from, address to, uint256 value) internal override {
-        if (from != address(0) && to != address(0)) revert NonTransferable(); // error, NibtXP no transferible
-        super._update(from, to, value);
+        // from address(0) a una dir es mint, de una dir a un address(0) es burn
+        if (from != address(0) && to != address(0)) revert NonTransferable(); // error: MintXP no transferible.
+        super._update(from, to, value); // openzeppelin ajusta balance y emite evento Transfer
     }
     
 }
