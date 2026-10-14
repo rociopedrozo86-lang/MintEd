@@ -151,7 +151,7 @@ contract MintCredential is ERC721, Ownable {
 
 
     // ---------------------------------------------------------------------
-    // setBaseURI| y _baseURI: Para agregar metadatos al token (NFT)
+    // setBaseURI y _baseURI: Para agregar metadatos al token (NFT)
     // ---------------------------------------------------------------------
 
     function setBaseURI(string calldata newBaseURI) external onlyOwner {
