@@ -23,14 +23,13 @@ contract MintXP is ERC20, ERC20Burnable, EIP712, Ownable {
     /// @notice Dirección del backend (autorizado a firmar los claims).
     address public claimSigner;
 
-    /// @notice Dict[dict[int_actividad: bool]]
-    /// claimed[usuario][actividad] == true si ya reclamó esa actividad.
-    ///         Esto es un registro para MintCredential.
+    /// @notice claimed[usuario][actividad] es true si ya se reclamó esa actividad.
+    /// Es un registro que usará MintCredential.
     mapping(address => mapping(uint256 => bool)) public claimed;
 
     // ---------------------------------------------------------------------
-    // Eventos: definidos con emit (XPClaimed y ClaimSignerUpdated)
-    // Errores: definidos con condiciones, al fallar se revierte la transacción
+    // Eventos: se disparan con emit (XPClaimed y ClaimSignerUpdated)
+    // Errores: se evalúan condiciones, al fallar se revierte la transacción
     // y se muestra el nombre del error (nivel código).
     // ---------------------------------------------------------------------
 
