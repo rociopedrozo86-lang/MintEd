@@ -36,7 +36,8 @@ contract MintEdCredential is ERC721, Ownable {
     // los cursos se identifican con un número
     mapping(uint256 => bool) public pathExists; // ¿existe tal curso? true false
     mapping(uint256 => uint256[]) private _pathActivities; // lista de actividades de un curso específico
-    mapping(address => mapping(uint256 => bool)) public hasCredential; // ¿este usuario reclamó la cred de este curso? true false
+    //mapping(address => mapping(uint256 => bool)) public hasCredential; // ¿este usuario reclamó la cred de este curso? true false
+	mapping(address => mapping(uint256 => uint256)) public credentialId; // el usuario en este curso, ¿qué credencial ha reclamado?
     mapping(uint256 => uint256) public tokenPath; // cada tokenId (número de token) se asocia al curso completado
 
     // ---------------------------------------------------------------------
@@ -101,7 +102,9 @@ contract MintEdCredential is ERC721, Ownable {
     /// @param pathId es el número del curso
     function claimCredential(uint256 pathId) external {
         if (!pathExists[pathId]) revert UnknownPath(pathId); // error: el curso no existe
-        if (hasCredential[msg.sender][pathId]) revert AlreadyHasCredential(); // error: el usuario ya reclamó esta credencial
+        //if (hasCredential[msg.sender][pathId]) revert AlreadyHasCredential(); // error: el usuario ya reclamó esta credencial
+		// el mapping ante una llave no definida devuelve un 0 -> credentialId[usuario][curso] == 0 significa que no reclamó credencial
+		if (credentialId[msg.sender][pathId] != 0) revert AlreadyHasCredential(); // error: el usuario ya reclamó esta credencial
 
         uint256[] storage ids = _pathActivities[pathId]; // referencia a la lista de actividades del curso
         uint256 len = ids.length; // len = cantidad de actividades del curso
@@ -111,7 +114,8 @@ contract MintEdCredential is ERC721, Ownable {
         }
 
         // se realiza entonces la asignación de la credencial
-        hasCredential[msg.sender][pathId] = true; // en el registro anotamos que el usuario reclamó la credencial de este curso
+        //hasCredential[msg.sender][pathId] = true; // en el registro anotamos que el usuario reclamó la credencial de este curso
+		credentialId[msg.sender][pathId] = tokenId; // en el registro anotamos que el usuario reclamó la credencial de este curso y nos guardamos el número tokenId
         uint256 tokenId = _nextTokenId++; // ahora: tokenId = _nextTokenId y también _nextTokenId aumenta en 1
         tokenPath[tokenId] = pathId; // el token del usuario queda relacionado al número de curso
 
