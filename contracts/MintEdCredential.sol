@@ -33,12 +33,21 @@ contract MintEdCredential is ERC721, Ownable {
     // Registros (son diccionarios)
     // ---------------------------------------------------------------------
 
+	// para revocar token
+	struct Revocation {
+    bool revoked;
+    uint64 revokedAt;
+    string reason;
+	}
+
     // los cursos se identifican con un número
     mapping(uint256 => bool) public pathExists; // ¿existe tal curso? true false
     mapping(uint256 => uint256[]) private _pathActivities; // lista de actividades de un curso específico
     //mapping(address => mapping(uint256 => bool)) public hasCredential; // ¿este usuario reclamó la cred de este curso? true false
 	mapping(address => mapping(uint256 => uint256)) public credentialId; // el usuario en este curso, ¿qué credencial ha reclamado?
     mapping(uint256 => uint256) public tokenPath; // cada tokenId (número de token) se asocia al curso completado
+
+	mapping(uint256 => Revocation) private _revocations; // registro de revocación
 
     // ---------------------------------------------------------------------
     // Eventos: se lanzan con emit (excepto unlocked que sólo lo conservamos para cumplir con ERC-5192)
@@ -52,6 +61,8 @@ contract MintEdCredential is ERC721, Ownable {
     event Locked(uint256 tokenId);
     event Unlocked(uint256 tokenId);
 
+	event CredentialRevoked(uint256 indexed tokenId, string reason); // para revocar token
+
     error ZeroAddress();
     error InvalidBurnCost();
     error UnknownPath(uint256 pathId);
@@ -60,6 +71,8 @@ contract MintEdCredential is ERC721, Ownable {
     error PathIncomplete(uint256 missingActivityId);
     error AlreadyHasCredential();
     error Soulbound();
+
+	error AlreadyRevoked(uint256 tokenId); // para revocar token
 
     // ---------------------------------------------------------------------
     // Constructor: se ejecuta una vez, al desplegarse el contrato
@@ -165,4 +178,31 @@ contract MintEdCredential is ERC721, Ownable {
     function _baseURI() internal view override returns (string memory) {
         return _baseTokenURI;
     }
+
+	// ---------------------------------------------------------------------
+	// Revocación: marca una credencial como inválida sin borrarla ni quemarla (sigue en historial)
+	// ---------------------------------------------------------------------
+
+	/// @notice Para el owner: Revocar una credencial (invalidar).
+	function revoke(uint256 tokenId, string calldata reason) external onlyOwner {
+    	_requireOwned(tokenId); // oppenzepelin revierte si el token no existe
+    	Revocation storage r = _revocations[tokenId]; // referencia al registro
+    	if (r.revoked) revert AlreadyRevoked(tokenId); // error: la revocación ya ha ocurrido
+    	r.revoked = true; // credencial ahora revocada (en el registro)
+    	r.revokedAt = uint64(block.timestamp); // credencial revocada a tal hora (en el registro)
+    	r.reason = reason; // credencial revocada por tal motivo (en el registro)
+    	emit CredentialRevoked(tokenId, reason); // evento: una credencial fue revocada!!
+	}
+
+	/// @notice isValid verifica que un token esté vigente (no revocado y con dueño válido)
+	function isValid(uint256 tokenId) external view returns (bool) {
+    	return _ownerOf(tokenId) != address(0) && !_revocations[tokenId].revoked;
+	}
+
+	/// @notice revocationOf devuelve el estado de un token (si fue revocado, cuándo y por qué)
+	function revocationOf(uint256 tokenId) external view returns (bool revoked, uint64 revokedAt, string memory reason) {
+    	Revocation storage r = _revocations[tokenId];
+    	return (r.revoked, r.revokedAt, r.reason);
+	}
+
 }
