@@ -128,8 +128,8 @@ contract MintEdCredential is ERC721, Ownable {
 
         // se realiza entonces la asignación de la credencial
         //hasCredential[msg.sender][pathId] = true; // en el registro anotamos que el usuario reclamó la credencial de este curso
-		credentialId[msg.sender][pathId] = tokenId; // en el registro anotamos que el usuario reclamó la credencial de este curso y nos guardamos el número tokenId
         uint256 tokenId = _nextTokenId++; // ahora: tokenId = _nextTokenId y también _nextTokenId aumenta en 1
+		credentialId[msg.sender][pathId] = tokenId; // en el registro anotamos que el usuario reclamó la credencial de este curso y nos guardamos el número tokenId
         tokenPath[tokenId] = pathId; // el token del usuario queda relacionado al número de curso
 
         mxp.burnFrom(msg.sender, burnCost); // se queman los mxp del usuario
