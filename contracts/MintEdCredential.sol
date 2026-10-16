@@ -10,13 +10,13 @@ interface IMintXP {
     function burnFrom(address account, uint256 value) external;
 }
 
-/// @title MintCredential
+/// @title MintEdCredential
 /// @notice Credencial educativa no transferible, compatible con ERC-5192 (más que un ERC721).
 /// @dev Para reclamarla es necesario que: 
 ///      (1) En el registro claimed (de MintXP) figuren todas las actividades del curso de la credencial completadas.
 ///          En el mismo registro, no debe haber ya reclamado la credencial antes.
 ///      (2) El usuario debió haber hecho un `approve` antes para quemar (pagar) el costo de la credencial en MXP.
-contract MintCredential is ERC721, Ownable {
+contract MintEdCredential is ERC721, Ownable {
     IMintXP public immutable mxp; // alias para usar las funciones de MintXP
 
     /// @notice Costo de la credencial. Es inmutable.
@@ -65,7 +65,7 @@ contract MintCredential is ERC721, Ownable {
     // ---------------------------------------------------------------------
 
     /// @param mxp_ dirección del contrato MintXP
-    constructor(address initialOwner, address mxp_, uint256 burnCost_, string memory baseURI_) ERC721("MintMind Credential", "MMC") Ownable(initialOwner) {
+    constructor(address initialOwner, address mxp_, uint256 burnCost_, string memory baseURI_) ERC721("MintEd Credential", "MEDC") Ownable(initialOwner) {
         if (mxp_ == address(0)) revert ZeroAddress(); // error: contrato vacío
         if (burnCost_ == 0) revert InvalidBurnCost(); // error: credencial gratis
         mxp = IMintXP(mxp_); // CASTEO: contrato de dirección mxp_ con la interfaz de arriba (funciones claimed y burnFrom)
@@ -131,7 +131,7 @@ contract MintCredential is ERC721, Ownable {
     function _update(address to, uint256 tokenId, address auth) internal override returns (address) {
         if (_ownerOf(tokenId) != address(0)) revert Soulbound(); // error: dirección no vacía, el token ya fue acuñado por otro
             //mint
-            return super._update(to, tokenId, auth); // openzeppelin anota el dueño del token, le suma que tiene un token más y dispara el evento Transfere
+            return super._update(to, tokenId, auth); // openzeppelin anota el dueño del token, le suma que tiene un token más y dispara el evento Transfer
     }
 
 
