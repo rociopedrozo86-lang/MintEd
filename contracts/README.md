@@ -17,9 +17,9 @@ MintEd es una plataforma educativa Web3: el contenido y la corrección de los qu
 
 ```
 Se completa una Actividad ───(firma EIP-712)───▶ claimXP en MintXP ────▶ MXP acuñados
-                                                                                       │
+                                                                                     │
 Se reclaman todas las Actividades del Learning Path + approve ──▶ claimCredential ──┤
-                                                                                       ▼
+                                                                                     ▼
                                                       Se queman 20 MXP y se emite la credencial
 ```
 
@@ -71,8 +71,7 @@ contracts/                    ← raíz del proyecto Hardhat
 ├── hardhat.config.ts
 ├── package.json
 ├── package-lock.json
-├── tsconfig.json
-└── .env.example
+└── tsconfig.json
 ```
 
 ## Requisitos
@@ -181,10 +180,10 @@ Claim(address user, uint256 activityId, uint256 amount, uint256 deadline)
 
 ## Tests
 
-`npx hardhat test` corre ambos archivos con la blockchain local de Hardhat.
+`npx hardhat test` corre los siguientes archivos con la blockchain local de Hardhat:
 
-- **`MintXP.ts`:** configuración inicial, claim exitoso, doble claim, firma vencida, montos inválidos, firmante equivocado, datos alterados, firma de otro usuario o de otro contrato, firma mal formada, rotación del firmante, permisos, transferencias bloqueadas y burn.
-- **`MintEdCredential.ts`:** configuración inicial, `createPath`, `claimCredential` (camino feliz y casos de ataque), `credentialId`, credencial no transferible, ERC-5192, metadatos, revocación y un recorrido completo de punta a punta.
+- **`MintXP.ts`:** testea configuración inicial, claim exitoso, doble claim, firma vencida, montos inválidos, firmante equivocado, datos alterados, firma de otro usuario o de otro contrato, firma mal formada, rotación del firmante, permisos, transferencias bloqueadas y burn.
+- **`MintEdCredential.ts`:** testea configuración inicial, `createPath`, `claimCredential` (escenario ideal y casos de ataque), `credentialId`, credencial no transferible, ERC-5192, metadatos, revocación y un recorrido completo.
 
 ## Decisiones de diseño y límites conocidos
 
@@ -192,8 +191,8 @@ Claim(address user, uint256 activityId, uint256 amount, uint256 deadline)
 - **`burnCost` es inmutable.** Ni el owner puede encarecer la credencial.
 - **Credencial no transferible.** No hay migración: si el usuario pierde su wallet, la credencial no se puede mover.
 - **Revocación irreversible.** `revoke` no se puede deshacer, no devuelve los MXP quemados y no libera el path para reclamarlo de nuevo.
-- **Owner único.** Una sola cuenta puede rotar el firmante, crear paths, revocar credenciales y cambiar el `baseURI`. En producción debería ser un multisig. `Ownable` también permite `transferOwnership` y `renounceOwnership`: si el owner renuncia, nadie podría rotar el firmante ni revocar.
-- **Firmante centralizado.** Quien controle su clave puede firmar claims para cualquier wallet y actividad (hasta 100 MXP por claim). Mitigación: el owner puede rotarlo con `setClaimSigner`.
+- **Owner único.** Una sola cuenta puede cambiar el firmante, crear paths, revocar credenciales y cambiar el `baseURI`. `Ownable` también permite `transferOwnership` y `renounceOwnership`: si el owner renuncia, nadie podría cambiar el firmante ni revocar.
+- **Firmante centralizado.** Quien controle su clave puede firmar claims para cualquier wallet y actividad (hasta 100 MXP por claim). **Mitigación:** el owner puede rotarlo con `setClaimSigner`.
 - **Sin protección contra Sybil.** Una persona con varias wallets puede reclamar varias veces.
 - **Solo wallets normales (EOA).** La verificación de firmas no contempla wallets de contrato.
 - **Sin auditoría externa.** Pensado solo para testnet.
