@@ -65,7 +65,7 @@ sequenceDiagram
 | [`MintXP`](contracts/contracts/MintXP.sol) | ERC-20 + `ERC20Burnable`, EIP-712 | Emite MXP solo con una firma válida del `claimSigner`. Registra `claimed[usuario][actividad]` para evitar el doble claim. |
 | [`MintEdCredential`](contracts/contracts/MintEdCredential.sol) | ERC-721 no transferible, compatible con ERC-5192 | Verifica las actividades del path en `MintXP`, quema `burnCost` con `burnFrom` y emite la credencial. |
 
-## Direcciones en Sepolia (chainId 11155111):
+### Direcciones en Sepolia (chainId 11155111):
 
 | Contrato | Dirección |
 |---|---|
