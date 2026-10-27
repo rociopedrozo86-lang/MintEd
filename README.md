@@ -163,7 +163,7 @@ Fuera del MVP: más usos para MXP, Proof of Personhood, varios learning paths y 
 
 ## Equipo
 
-- David P
+- David Paredes
 - Graciano Chalian
 - Melina Alarcon
 - Rocio Pedrozo
