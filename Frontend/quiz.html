@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <script>
+  // Apenas carga la página, revisamos si existe la sesión en localStorage
+  if (!localStorage.getItem('userWallet')) {
+    alert("Acceso denegado. Debes conectar tu wallet en la página principal para acceder al cuestionario.");
+    window.location.href = "index.html"; // Lo echamos a la página principal
+  }
+</script>
+  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cuestionario Blockchain</title>
+  <style>
+    /* Reutilizamos tu paleta de colores */
+    :root {
+      --bg: #0f1419; --card: #182028; --line: #26323d; --text: #e8eef4;
+      --accent: #3ddc97; --err: #ff6b6b;
+    }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, sans-serif; padding: 24px; }
+    .container { max-width: 600px; margin: 0 auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+    h1 { margin-top: 0; font-size: 1.5rem; }
+    .question { margin-bottom: 24px; border-bottom: 1px solid var(--line); padding-bottom: 16px; }
+    .question p { font-weight: 600; margin: 0 0 12px; }
+    label { display: block; margin-bottom: 8px; cursor: pointer; }
+    button { background: var(--accent); color: #000; border: 0; border-radius: 8px; padding: 12px 20px; font-weight: bold; font-size: 1rem; cursor: pointer; width: 100%; }
+    button:hover { opacity: 0.9; }
+    .result { margin-top: 20px; padding: 16px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 1.2rem; display: none; }
+    .pass { background: rgba(61, 220, 151, 0.2); color: var(--accent); border: 1px solid var(--accent); }
+    .fail { background: rgba(255, 107, 107, 0.2); color: var(--err); border: 1px solid var(--err); }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Validación de conocimientos</h1>
+    <form id="quizForm">
+      
+      <div class="question">
+        <p>1. ¿Qué es principalmente una blockchain?</p>
+        <label><input type="radio" name="q1" value="0" required> Un banco central digital</label>
+        <label><input type="radio" name="q1" value="1"> Una base de datos distribuida e inmutable</label>
+        <label><input type="radio" name="q1" value="0"> Un lenguaje de programación</label>
+      </div>
+
+      <div class="question">
+        <p>2. ¿Para qué se utiliza el "Gas" en Ethereum?</p>
+        <label><input type="radio" name="q2" value="0" required> Para comprar hardware de minería</label>
+        <label><input type="radio" name="q2" value="0"> Es el nombre del servidor principal</label>
+        <label><input type="radio" name="q2" value="1"> Pagar la tarifa computacional de las transacciones</label>
+      </div>
+
+      <div class="question">
+        <p>3. ¿Qué es un Smart Contract (Contrato Inteligente)?</p>
+        <label><input type="radio" name="q3" value="1" required> Código que se ejecuta automáticamente en la blockchain</label>
+        <label><input type="radio" name="q3" value="0"> Un documento legal firmado por un abogado</label>
+        <label><input type="radio" name="q3" value="0"> Una billetera física (Hardware Wallet)</label>
+      </div>
+
+      <div class="question">
+        <p>4. ¿Qué función cumple MetaMask?</p>
+        <label><input type="radio" name="q4" value="0" required> Es un exchange centralizado como Binance</label>
+        <label><input type="radio" name="q4" value="1"> Es una billetera Web3 que gestiona tus llaves privadas</label>
+        <label><input type="radio" name="q4" value="0"> Es una red de pruebas (Testnet)</label>
+      </div>
+
+      <div class="question">
+        <p>5. ¿Qué significa que un token no sea transferible (como un Soulbound Token)?</p>
+        <label><input type="radio" name="q5" value="1" required> Que queda vinculado permanentemente a una dirección</label>
+        <label><input type="radio" name="q5" value="0"> Que no tiene ningún valor económico</label>
+        <label><input type="radio" name="q5" value="0"> Que solo se puede enviar a otras redes</label>
+      </div>
+
+      <button type="submit">Enviar respuestas</button>
+    </form>
+
+    <div id="resultBox" class="result"></div>
+  </div>
+
+  <script>
+    document.getElementById('quizForm').addEventListener('submit', function(e) {
+      e.preventDefault(); // Evita que la página se recargue
+
+      // Recopilar respuestas
+      const formData = new FormData(this);
+      let score = 0;
+      
+      // Sumar los valores (las respuestas correctas valen 1, las incorrectas 0)
+      for (let value of formData.values()) {
+        score += parseInt(value);
+      }
+
+      // Mostrar el resultado
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.display = 'block';
+
+      if (score >= 4) {
+        resultBox.textContent = `¡Aprobado! Acertaste ${score} de 5.`;
+        resultBox.className = 'result pass';
+      } else {
+        resultBox.textContent = `Desaprobado. Acertaste ${score} de 5 (Necesitas 4).`;
+        resultBox.className = 'result fail';
+      }
+    });
+  </script>
+</body>
+</html>
